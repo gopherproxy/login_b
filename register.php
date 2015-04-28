@@ -10,7 +10,40 @@ if(isset($_POST['submit'])){
 		} else {
 			echo 'Congratulation - Succesful connection to database!';
 		}
-} 
+		
+// prepare data for insertion into database
+// collect form values
+$username = $_POST['username'];
+$password = $_POST['password'];
+$first_name = $_POST['first_name'];
+$last_name = $_POST['last_name'];
+$email = $_POST['email'];
+// check if username and email exist, else insert data into database
+    $exists = 0;
+    $check = $connection->query("SELECT username from users WHERE username = '$username' LIMIT 1");
+    // sometimes we only want to retrieve a subset of records. In MySQL, this is accomplished using the LIMIT keyword
+    if ($check->num_rows == 1) {
+        $exists = 1;
+        $check = $connection->query("SELECT email from users WHERE email = '$email' LIMIT 1");
+        if ($check->num_rows == 1) $exists = 2;    
+    } else {
+        $check = $connection->query("SELECT email from users WHERE email = '$email' LIMIT 1");
+        if ($check->num_rows == 1) $exists = 3;
+    }
+ 
+    if ($exists == 1) echo "<p>Username already exists!</p>";
+    else if ($exists == 2) echo "<p>Username and Email already exist!</p>";
+    else if ($exists == 3) echo "<p>Email already exists!</p>";
+    else {
+    
+        ###################################
+        # insert data into mysql database #
+        ###################################        
+                
+    }		
+		
+		
+}// end if isset 
 
 ?>
 <!doctype html>
