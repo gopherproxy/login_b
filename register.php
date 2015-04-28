@@ -7,19 +7,19 @@ if(isset($_POST['submit'])){
 	$connection = new mysqli(HOSTNAME, MYSQLUSER, MYSQLPASS, MYSQLDB);
 	if($connection->connect_errno){
 	die('Ooops, there was an error: ' . $connection->connect_error);
-		} else {
-			echo 'Congratulation - Succesful connection to database!';
-		}
+		} 
 		
 // prepare data for insertion into database
 // collect form values
 $username = $_POST['username'];
-$password = $_POST['password'];
+// adding password encryption
+$password = hash("sha256", $_POST['password']);
 $first_name = $_POST['first_name'];
 $last_name = $_POST['last_name'];
 $email = $_POST['email'];
 // check if username and email exist, else insert data into database
     $exists = 0;
+	// Select field username from the table users where username is equal to user input
     $check = $connection->query("SELECT username from users WHERE username = '$username' LIMIT 1");
     // sometimes we only want to retrieve a subset of records. In MySQL, this is accomplished using the LIMIT keyword
     if ($check->num_rows == 1) {
@@ -38,8 +38,18 @@ $email = $_POST['email'];
     
         ###################################
         # insert data into mysql database #
-        ###################################        
-                
+        ###################################   
+		
+		// sql query inserting values into database
+		$sql = "INSERT INTO users (id, username, password, first_name, last_name, email) VALUES (NULL, '$username', '$password', '$first_name', '$last_name', '$email')";     
+        // execute the query
+		
+		if($connection->query($sql)){
+			echo "New user added!";
+		} else {
+			echo "Sorry - we couldn't proces your request...";
+		}
+		        
     }		
 		
 		
