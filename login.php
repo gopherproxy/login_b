@@ -7,8 +7,9 @@ if (isset($_POST['submit'])) {
         // exit the current script
         die($connection->connect_error);
     }
- 
-    $username = $_POST['username'];
+ 	// escaping special characters in SQL queries - avoiding SQL injection (' or 1=1 #)
+    // parameters: the mysqli object creating the connection + input field value
+	$username = mysqli_real_escape_string($mysqli, $_POST['username']);
     // adding password encryption
 	$password = hash("sha256", $_POST['password']);	
 	// prepare sql query to detect password/username match
@@ -19,11 +20,18 @@ if (isset($_POST['submit'])) {
     if (!$result->num_rows == 1) {
         echo "<p>Invalid username/password!</p>";
     } else {
-        echo "<p>Logged in successfully</p>";
+        //echo "<p>Logged in successfully</p>";
         
         ######################
         # do more stuff here #
         ######################
+		
+		// start a php session
+		session_start();
+		// session gets a name and is activated
+		$_SESSION['logged_in'] = true;
+		// redirecting to a specific URL
+		header("Location: restricted.php");
                 
     }
 }
